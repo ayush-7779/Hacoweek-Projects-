@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Royal Palace | Luxury Dining</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Poppins',sans-serif;
+  background:#0c0c0c;
+  color:#fff;
+}
+
+/* HERO */
+.hero{
+  height:80vh;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.7), rgba(0,0,0,.9)),
+    url("https://images.unsplash.com/photo-1543353071-873f17a7a088") center/cover;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:4rem;
+  color:#d4af37;
+}
+.hero p{margin-top:15px;font-size:18px;opacity:.9}
+
+/* SECTION */
+section{padding:80px 10%}
+section h2{
+  font-family:'Playfair Display',serif;
+  font-size:2.6rem;
+  color:#d4af37;
+  text-align:center;
+  margin-bottom:50px;
+}
+
+/* MENU GRID */
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:40px;
+}
+.menu-card{
+  background:#151515;
+  padding:30px;
+  border-radius:18px;
+  box-shadow:0 15px 30px rgba(0,0,0,.4);
+}
+.menu-card h3{
+  font-family:'Playfair Display',serif;
+  color:#d4af37;
+  margin-bottom:20px;
+}
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+.price{color:#d4af37}
+.add{
+  background:#d4af37;
+  border:none;
+  padding:6px 14px;
+  border-radius:20px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+/* ORDER SECTION */
+.order-box{
+  background:#111;
+  border-radius:20px;
+  padding:30px;
+  max-width:500px;
+  margin:0 auto;
+  box-shadow:0 0 40px rgba(212,175,55,.25);
+}
+.order-box h3{
+  text-align:center;
+  color:#d4af37;
+  font-family:'Playfair Display',serif;
+  margin-bottom:20px;
+}
+.order-item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+}
+.total{
+  border-top:1px solid #333;
+  margin-top:15px;
+  padding-top:15px;
+  font-size:18px;
+  color:#d4af37;
+}
+.order-btn{
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:#d4af37;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* FOOTER */
+footer{
+  background:#050505;
+  text-align:center;
+  padding:30px;
+  font-size:14px;
+  opacity:.7;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero">
+  <div>
+    <h1>Royal Palace</h1>
+    <p>5-Star Luxury Dining Experience</p>
+  </div>
+</div>
+
+<!-- STARTERS -->
+<section>
+  <h2>Starters</h2>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <h3>Vegetarian</h3>
+      <div class="item">
+        <span>Paneer Tikka Royale</span>
+        <span class="price">₹450</span>
+        <button class="add" onclick="addItem('Paneer Tikka',450)">Add</button>
+      </div>
+      <div class="item">
+        <span>Paneer chillie</span>
+        <span class="price">₹390</span>
+        <button class="add" onclick="addItem('Paneer chillie',390)">Add</button>
+      </div>
+      <div class="item">
+        <span>Crispy Corn Truffle</span>
+        <span class="price">₹390</span>
+        <button class="add" onclick="addItem('Crispy Corn',390)">Add</button>
+      </div>
+    </div>
+
+    <div class="menu-card">
+      <h3>Non-Vegetarian</h3>
+      <div class="item">
+        <span>Chicken Malai Kebab</span>
+        <span class="price">₹520</span>
+        <button class="add" onclick="addItem('Chicken Kebab',520)">Add</button>
+         </div>
+        <div class="item">
+        <span>Chicken 65</span>
+        <span class="price">₹420</span>
+        <button class="add" onclick="addItem('Chicken 65',420)">Add</button>
+      </div>
+
+      <div class="item">
+        <span>Fish Amritsari</span>
+        <span class="price">₹610</span>
+        <button class="add" onclick="addItem('Fish Amritsari',610)">Add</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DESSERTS -->
+<section>
+  <h2>Desserts</h2>
+  <div class="menu-grid">
+    <div class="menu-card">
+      <h3>Sweet Treats</h3>
+      <div class="item">
+        <span>Chocolate Lava Cake</span>
+        <span class="price">₹360</span>
+        <button class="add" onclick="addItem('Lava Cake',360)">Add</button>
+      </div>
+      <div class="item">
+        <span>punjabi lassi</span>
+        <span class="price">₹160</span>
+        <button class="add" onclick="addItem('Lassi',160)">Add</button>
+      </div>
+      <div class="item">
+        <span>Classic Tiramisu</span>
+        <span class="price">₹420</span>
+        <button class="add" onclick="addItem('Tiramisu',420)">Add</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER SECTION -->
+<section>
+  <h2>Your Order</h2>
+  <div class="order-box">
+    <h3>Order Summary</h3>
+    <div id="orderList"></div>
+    <div class="total">Total: ₹<span id="total">0</span></div>
+    <button class="order-btn">Place Order</button>
+  </div>
+</section>
+
+<footer>
+  © 2026 Royal Palace Hotel • Fine Dining
+</footer>
+
+<script>
+let total = 0;
+function addItem(name, price){
+  total += price;
+  document.getElementById("total").innerText = total;
+  let div = document.createElement("div");
+  div.className="order-item";
+  div.innerHTML = `<span>${name}</span><span>₹${price}</span>`;
+  document.getElementById("orderList").appendChild(div);
+}
+</script>
+
+</body>
+</html>
