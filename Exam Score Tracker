@@ -1,0 +1,173 @@
+#include <stdio.h>
+#include <stdlib.h>
+#define MAX_SCORE 100
+#define MAX_STUDENTS 1000
+
+typedef struct ScoreTracker {
+    int frequency[MAX_SCORE + 1];  // freq[0] to freq[100]
+    int totalStudents;
+    int minScore;
+    int maxScore;
+    int modeScore;
+    int modeFreq;
+} ScoreTracker;
+
+// Initialize tracker
+ScoreTracker* createTracker() {
+    ScoreTracker* tracker = (ScoreTracker*)malloc(sizeof(ScoreTracker));
+    for (int i = 0; i <= MAX_SCORE; i++) {
+        tracker->frequency[i] = 0;
+    }
+    tracker->totalStudents = 0;
+    tracker->minScore = MAX_SCORE + 1;
+    tracker->maxScore = -1;
+    tracker->modeScore = -1;
+    tracker->modeFreq = 0;
+    return tracker;
+}
+
+// Add/Update score DYNAMICALLY - O(1)
+void addScore(ScoreTracker* tracker, int score) {
+    if (score < 0 || score > MAX_SCORE) {
+        printf("❌ Invalid score: %d\n", score);
+        return;
+    }
+    
+    // Update frequency
+    tracker->frequency[score]++;
+    tracker->totalStudents++;
+    
+    // Update min/max
+    if (score < tracker->minScore) tracker->minScore = score;
+    if (score > tracker->maxScore) tracker->maxScore = score;
+    
+    printf("➕ Added score %d (Total: %d students)\n", score, tracker->totalStudents);
+}
+
+// Remove score DYNAMICALLY - O(1)
+void removeScore(ScoreTracker* tracker, int score) {
+    if (score < 0 || score > MAX_SCORE || tracker->frequency[score] == 0) {
+        printf("❌ Score %d not found!\n", score);
+        return;
+    }
+    
+    tracker->frequency[score]--;
+    tracker->totalStudents--;
+    
+    printf("🗑️  Removed score %d (Total: %d students)\n", score, tracker->totalStudents);
+    
+    // Update min/max if needed (linear traversal)
+    updateMinMax(tracker);
+}
+
+// LINEAR TRAVERSAL: Find Min - O(n)
+int findMin(ScoreTracker* tracker) {
+    for (int i = 0; i <= MAX_SCORE; i++) {
+        if (tracker->frequency[i] > 0) return i;
+    }
+    return -1;
+}
+
+// LINEAR TRAVERSAL: Find Max - O(n) 
+int findMax(ScoreTracker* tracker) {
+    for (int i = MAX_SCORE; i >= 0; i--) {
+        if (tracker->frequency[i] > 0) return i;
+    }
+    return -1;
+}
+
+// LINEAR TRAVERSAL: Find Mode - O(n)
+int findMode(ScoreTracker* tracker) {
+    int maxFreq = 0;
+    int mode = -1;
+    
+    for (int i = 0; i <= MAX_SCORE; i++) {
+        if (tracker->frequency[i] > maxFreq) {
+            maxFreq = tracker->frequency[i];
+            mode = i;
+        }
+    }
+    return mode;
+}
+
+// Update min/max after deletion - LINEAR O(n)
+void updateMinMax(ScoreTracker* tracker) {
+    tracker->minScore = findMin(tracker);
+    tracker->maxScore = findMax(tracker);
+}
+
+// Display frequency distribution
+void displayFrequency(ScoreTracker* tracker) {
+    printf("\n📊 === FREQUENCY DISTRIBUTION ===\n");
+    printf("Score Range | Frequency | Students\n");
+    printf("---------------------------------\n");
+    
+    int total = 0;
+    for (int i = 0; i <= MAX_SCORE; i += 10) {
+        int freq = 0;
+        for (int j = i; j < i + 10 && j <= MAX_SCORE; j++) {
+            freq += tracker->frequency[j];
+        }
+        printf("%3d-%3d    | %8d | %8d\n", i, (i+9 > MAX_SCORE ? MAX_SCORE : i+9), freq, total);
+        total += freq;
+    }
+}
+
+// Display statistics
+void displayStats(ScoreTracker* tracker) {
+    printf("\n📈 === EXAM STATISTICS ===\n");
+    printf("Total Students: %d\n", tracker->totalStudents);
+    printf("Minimum Score: %d\n", tracker->minScore);
+    printf("Maximum Score: %d\n", tracker->maxScore);
+    printf("Mode (Most Frequent): %d\n", findMode(tracker));
+    
+    // Average using linear traversal
+    int sum = 0;
+    for (int i = 0; i <= MAX_SCORE; i++) {
+        sum += i * tracker->frequency[i];
+    }
+    printf("Average Score: %.1f\n", (float)sum / tracker->totalStudents);
+}
+
+// Free memory
+void freeTracker(ScoreTracker* tracker) {
+    free(tracker);
+}
+
+int main() {
+    ScoreTracker* tracker = createTracker();
+    
+    printf("🎓 EXAM SCORE TRACKER - ARRAY FREQUENCY COUNT\n");
+    printf("=============================================\n\n");
+    
+    // Test 1: Add scores
+    printf("1️⃣ ADDING SCORES:\n");
+    int scores[] = {85, 92, 78, 92, 85, 100, 78, 92, 65, 85};
+    for (int i = 0; i < 10; i++) {
+        addScore(tracker, scores[i]);
+    }
+    
+    displayStats(tracker);
+    displayFrequency(tracker);
+    
+    // Test 2: Dynamic Update - Remove score
+    printf("\n2️⃣ DYNAMIC UPDATE:\n");
+    removeScore(tracker, 92);
+    displayStats(tracker);
+    
+    // Test 3: Linear Traversal Operations
+    printf("\n3️⃣ LINEAR TRAVERSAL RESULTS:\n");
+    printf("Min (traversal): %d\n", findMin(tracker));
+    printf("Max (traversal): %d\n", findMax(tracker));
+    printf("Mode (traversal): %d\n", findMode(tracker));
+    
+    // Test 4: More updates
+    printf("\n4️⃣ MORE UPDATES:\n");
+    addScore(tracker, 95);
+    removeScore(tracker, 78);
+    displayStats(tracker);
+    
+    freeTracker(tracker);
+    printf("\n✅ Score Tracker Demo Complete!\n");
+    return 0;
+}
