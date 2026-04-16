@@ -1,0 +1,212 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+typedef struct Song {
+    char title[50];
+    char artist[50];
+    struct Song* prev;
+    struct Song* next;
+} Song;
+
+typedef struct Playlist {
+    Song* head;
+    Song* tail;
+    int size;
+} Playlist;
+
+// Create empty playlist
+Playlist* createPlaylist() {
+    Playlist* pl = (Playlist*)malloc(sizeof(Playlist));
+    pl->head = NULL;
+    pl->tail = NULL;
+    pl->size = 0;
+    return pl;
+}
+
+// ADD TO FRONT - O(1)
+void addToFront(Playlist* pl, char* title, char* artist) {
+    Song* newSong = (Song*)malloc(sizeof(Song));
+    strcpy(newSong->title, title);
+    strcpy(newSong->artist, artist);
+    newSong->prev = NULL;
+    newSong->next = pl->head;
+    
+    if (pl->head != NULL) {
+        pl->head->prev = newSong;
+    } else {
+        pl->tail = newSong;
+    }
+    pl->head = newSong;
+    pl->size++;
+    printf("➕ Added '%s'\n", title);
+}
+
+// DELETE BY POSITION (1-based) - O(n)
+void deleteByPosition(Playlist* pl, int pos) {
+    if (pos < 1 || pos > pl->size || pl->head == NULL) {
+        printf("❌ Invalid position %d\n", pos);
+        return;
+    }
+    
+    Song* current = pl->head;
+    // Go to position
+    for (int i = 1; i < pos; i++) {
+        current = current->next;
+    }
+    
+    // Delete HEAD
+    if (current == pl->head) {
+        pl->head = pl->head->next;
+        if (pl->head != NULL) {
+            pl->head->prev = NULL;
+        } else {
+            pl->tail = NULL;
+        }
+    }
+    // Delete TAIL
+    else if (current == pl->tail) {
+        pl->tail = pl->tail->prev;
+        pl->tail->next = NULL;
+    }
+    // Delete MIDDLE
+    else {
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+    }
+    
+    printf("🗑️  Deleted '%s' at pos %d\n", current->title, pos);
+    free(current);
+    pl->size--;
+}
+
+// SHUFFLE by swapping random nodes - O(n²)
+void shufflePlaylist(Playlist* pl) {
+    if (pl->size < 2) {
+        printf("❌ Need 2+ songs to shuffle!\n");
+        return;
+    }
+    
+    srand(time(NULL));
+    printf("🎲 Shuffling playlist...\n");
+    
+    // Swap random pairs multiple times
+    for (int swaps = 0; swaps < pl->size * 2; swaps++) {
+        int pos1 = (rand() % pl->size) + 1;
+        int pos2 = (rand() % pl->size) + 1;
+        
+        // Get node1
+        Song* node1 = pl->head;
+        for (int i = 1; i < pos1; i++) node1 = node1->next;
+        
+        // Get node2  
+        Song* node2 = pl->head;
+        for (int i = 1; i < pos2; i++) node2 = node2->next;
+        
+        // Swap DATA (not pointers for simplicity)
+        char tempTitle[50], tempArtist[50];
+        strcpy(tempTitle, node1->title);
+        strcpy(tempArtist, node1->artist);
+        strcpy(node1->title, node2->title);
+        strcpy(node1->artist, node2->artist);
+        strcpy(node2->title, tempTitle);
+        strcpy(node2->artist, tempArtist);
+    }
+    printf("✅ Shuffled!\n");
+}
+
+// REVERSE entire playlist - O(n)
+void reversePlaylist(Playlist* pl) {
+    if (pl->size < 2) return;
+    
+    Song* current = pl->head;
+    Song* temp = NULL;
+    
+    // Reverse all pointers
+    while (current != NULL) {
+        temp = current->prev;
+        current->prev = current->next;
+        current->next = temp;
+        current = current->prev;
+    }
+    
+    // Swap head and tail
+    temp = pl->head;
+    pl->head = pl->tail;
+    pl->tail = temp;
+    
+    if (pl->head != NULL) pl->head->prev = NULL;
+    if (pl->tail != NULL) pl->tail->next = NULL;
+    
+    printf("🔄 Playlist reversed!\n");
+}
+
+// DISPLAY playlist
+void displayPlaylist(Playlist* pl) {
+    printf("\n🎵 === PLAYLIST (%d songs) ===\n", pl->size);
+    if (pl->head == NULL) {
+        printf("Playlist empty!\n");
+        return;
+    }
+    
+    Song* current = pl->head;
+    int pos = 1;
+    while (current != NULL) {
+        printf("%2d. 🎤 %s | 🎸 %s\n", pos++, current->title, current->artist);
+        current = current->next;
+    }
+    printf("============================\n\n");
+}
+
+// Free all memory
+void freePlaylist(Playlist* pl) {
+    Song* current = pl->head;
+    while (current != NULL) {
+        Song* next = current->next;
+        free(current);
+        current = next;
+    }
+    free(pl);
+}
+
+int main() {
+    Playlist* playlist = createPlaylist();
+    
+    printf("=== MUSIC PLAYLIST - DOUBLY LINKED LIST ===\n\n");
+    
+    // 1. ADD TO FRONT
+    printf("1️⃣ ADDING SONGS TO FRONT:\n");
+    addToFront(playlist, "Bohemian Rhapsody", "Queen");
+    addToFront(playlist, "Hotel California", "Eagles"); 
+    addToFront(playlist, "Stairway to Heaven", "Led Zeppelin");
+    addToFront(playlist, "Billie Jean", "Michael Jackson");
+    addToFront(playlist, "Smells Like Teen Spirit", "Nirvana");
+    
+    displayPlaylist(playlist);
+    
+    // 2. DELETE BY POSITION
+    printf("2️⃣ DELETE POSITION 2:\n");
+    deleteByPosition(playlist, 2);
+    displayPlaylist(playlist);
+    
+    // 3. SHUFFLE BY NODE SWAP
+    printf("3️⃣ SHUFFLE PLAYLIST:\n");
+    shufflePlaylist(playlist);
+    displayPlaylist(playlist);
+    
+    // 4. REVERSE PLAYLIST  
+    printf("4️⃣ REVERSE PLAYLIST:\n");
+    reversePlaylist(playlist);
+    displayPlaylist(playlist);
+    
+    // 5. MORE OPERATIONS
+    printf("5️⃣ ADD MORE + DELETE:\n");
+    addToFront(playlist, "Shape of You", "Ed Sheeran");
+    deleteByPosition(playlist, 3);
+    displayPlaylist(playlist);
+    
+    freePlaylist(playlist);
+    printf("✅ ALL OPERATIONS COMPLETED!\n");
+    return 0;
+}
